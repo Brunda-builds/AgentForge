@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgentForge — From Fresher to Finalist</title>
+  <meta name="description" content="AgentForge is the world's first Autonomous AI Mentor that builds your hackathon roadmap, validates your code, and predicts your interview. From Fresher to Finalist." />
+  <meta property="og:title" content="AgentForge — From Fresher to Finalist" />
+  <meta property="og:description" content="The AI Mentor for hackathon success. Skill assessment, roadmaps, code generation, debugging, and judge preparation." />
+  <meta name="theme-color" content="#007BFF" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body>
+
+<!-- Confetti Canvas -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- Feedback Toast Container -->
+<div id="feedback-toast" role="status" aria-live="polite"></div>
+
+<!-- Ambient Orbs -->
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<!-- ============================================================
+     NAVIGATION
+     ============================================================ -->
+<nav id="nav">
+  <a href="#hero" class="nav-logo" aria-label="AgentForge Home">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <rect width="36" height="36" rx="8" fill="url(#anvil-grad)"/>
+      <!-- Anvil body -->
+      <rect x="7" y="18" width="22" height="10" rx="2" fill="#ffffff" opacity="0.15"/>
+      <rect x="10" y="12" width="16" height="8" rx="2" fill="#ffffff" opacity="0.25"/>
+      <rect x="13" y="8"  width="10" height="6"  rx="2" fill="#ffffff" opacity="0.4"/>
+      <!-- Circuit glow lines -->
+      <line x1="13" y1="22" x2="23" y2="22" stroke="url(#circuit-grad)" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
+      <line x1="18" y1="19" x2="18" y2="27" stroke="url(#circuit-grad)" stroke-width="1.5" stroke-linecap="round" opacity="0.9"/>
+      <circle cx="18" cy="22" r="2" fill="#32FF7E" opacity="0.9"/>
+      <circle cx="13" cy="22" r="1.2" fill="#007BFF" opacity="0.8"/>
+      <circle cx="23" cy="22" r="1.2" fill="#007BFF" opacity="0.8"/>
+      <defs>
+        <linearGradient id="anvil-grad" x1="0" y1="0" x2="36" y2="36">
+          <stop offset="0%" stop-color="#007BFF"/>
+          <stop offset="100%" stop-color="#0033aa"/>
+        </linearGradient>
+        <linearGradient id="circuit-grad" x1="0" y1="0" x2="36" y2="0">
+          <stop offset="0%" stop-color="#007BFF"/>
+          <stop offset="100%" stop-color="#32FF7E"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <span class="nav-logo-text">AgentForge</span>
+  </a>
+
+  <ul class="nav-links">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#judge-proof">Results</a></li>
+    <li><a href="#dashboard" class="nav-cta" id="nav-start-btn">Start Journey →</a></li>
+  </ul>
+</nav>
+
+<!-- ============================================================
+     HERO
+     ============================================================ -->
+<section id="hero">
+  <!-- Floating contextual cards -->
+  <div class="hero-visual" aria-hidden="true">
+    <div class="floating-card card-1">
+      <span style="color:var(--lime)">✓</span> Skill Assessed
+    </div>
+    <div class="floating-card card-2">
+      🚀 Roadmap Generated
+    </div>
+    <div class="floating-card card-3">
+      🏆 Judge-Ready
+    </div>
+    <div class="floating-card card-4">
+      <span style="color:var(--blue-bright)">⚡</span> Code Validated
+    </div>
+  </div>
+
+  <div style="position:relative; z-index:2;">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      AI-Powered · Gamified · Hackathon-Ready
+    </div>
+
+    <h1 class="hero-title">
+      <span class="line1">From Fresher</span>
+      <span class="line2">to Finalist.</span>
+    </h1>
+
+    <p class="hero-subtitle">
+      The world's first <strong>Autonomous AI Mentor</strong> that builds your roadmap, validates your code, and predicts your interview — so you walk into every hackathon ready to win.
+    </p>
+
+    <div class="hero-form" style="max-width:680px; margin:0 auto 30px; text-align:left; background:var(--bg-elevated); padding:24px; border-radius:var(--radius-lg); border:1px solid var(--border); box-shadow:var(--shadow-card);">
+      <h3 style="margin-bottom:16px; font-size:1.1rem; color:var(--text-primary); font-weight:700;">Configure Your Mentor</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:16px;">
+        <div>
+          <label style="display:block; font-size:0.8rem; color:var(--text-muted); margin-bottom:6px; font-weight:600;">Your Name</label>
+          <input type="text" id="userName" placeholder="e.g. Alex" style="width:100%; padding:10px 14px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); color:white; outline:none;" />
+        </div>
+        <div>
+          <label style="display:block; font-size:0.8rem; color:var(--text-muted); margin-bottom:6px; font-weight:600;">Topic / Interest</label>
+          <input type="text" id="userTopic" placeholder="e.g. Healthcare AI" style="width:100%; padding:10px 14px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); color:white; outline:none;" />
+        </div>
+        <div>
+          <label style="display:block; font-size:0.8rem; color:var(--text-muted); margin-bottom:6px; font-weight:600;">Skill Level</label>
+          <select id="userLevel" style="width:100%; padding:10px 14px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); color:white; outline:none; appearance:none;">
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+          </select>
+        </div>
+        <div>
+          <label style="display:block; font-size:0.8rem; color:var(--text-muted); margin-bottom:6px; font-weight:600;">Hackathon Idea (Optional)</label>
+          <input type="text" id="userIdea" placeholder="e.g. Chatbot for seniors" style="width:100%; padding:10px 14px; background:var(--bg-card); border:1px solid var(--border); border-radius:var(--radius-md); color:white; outline:none;" />
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-actions">
+      <button class="btn-primary" id="hero-start-btn" aria-label="Start your journey with AgentForge">
+        <span class="btn-glow"></span>
+        ⚡ Start Journey
+      </button>
+      <a href="#judge-proof" class="btn-secondary">
+        📊 See Results
+      </a>
+    </div>
+
+    <!-- Loading Modal -->
+    <div id="loading-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(10,10,15,0.8); backdrop-filter:blur(10px); z-index:9999; flex-direction:column; align-items:center; justify-content:center;">
+      <div class="orb orb-3" style="animation:none"></div>
+      <div style="font-size:3rem; margin-bottom:20px; animation:pulse-dot 1.5s infinite;">⚡</div>
+      <h2 style="color:var(--text-primary); font-size:1.5rem; margin-bottom:8px;">AgentForge is Thinking...</h2>
+      <p style="color:var(--text-muted); font-size:0.9rem; max-width:400px; text-align:center;">Analyzing your profile, generating the roadmap, predicting judge questions, and forging your code.</p>
+    </div>
+
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="value" id="stat-skills">8</div>
+        <div class="label">AI Functions</div>
+      </div>
+      <div class="hero-stat">
+        <div class="value">5</div>
+        <div class="label">Journey Stages</div>
+      </div>
+      <div class="hero-stat">
+        <div class="value">100%</div>
+        <div class="label">Hackathon Ready</div>
+      </div>
+      <div class="hero-stat">
+        <div class="value">∞</div>
+        <div class="label">Personalized</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FEATURES MARQUEE
+     ============================================================ -->
+<div id="features-strip" aria-hidden="true">
+  <div class="features-track">
+    <!-- Duplicated for seamless scroll -->
+    <div class="feature-pill"><span class="icon">🎯</span> Skill Assessment</div>
+    <div class="feature-pill"><span class="icon">🗺️</span> Learning Roadmap</div>
+    <div class="feature-pill"><span class="icon">💡</span> Project Ideas</div>
+    <div class="feature-pill"><span class="icon">⚙️</span> Code Generation</div>
+    <div class="feature-pill"><span class="icon">🐛</span> Auto Debug</div>
+    <div class="feature-pill"><span class="icon">📖</span> Code Explanations</div>
+    <div class="feature-pill"><span class="icon">⚖️</span> Judge Questions</div>
+    <div class="feature-pill"><span class="icon">🎮</span> Demo Simulation</div>
+    <div class="feature-pill"><span class="icon">🏆</span> Badges & Rewards</div>
+    <div class="feature-pill"><span class="icon">📈</span> Progress Tracking</div>
+    <div class="feature-pill"><span class="icon">🎯</span> Skill Assessment</div>
+    <div class="feature-pill"><span class="icon">🗺️</span> Learning Roadmap</div>
+    <div class="feature-pill"><span class="icon">💡</span> Project Ideas</div>
+    <div class="feature-pill"><span class="icon">⚙️</span> Code Generation</div>
+    <div class="feature-pill"><span class="icon">🐛</span> Auto Debug</div>
+    <div class="feature-pill"><span class="icon">📖</span> Code Explanations</div>
+    <div class="feature-pill"><span class="icon">⚖️</span> Judge Questions</div>
+    <div class="feature-pill"><span class="icon">🎮</span> Demo Simulation</div>
+    <div class="feature-pill"><span class="icon">🏆</span> Badges & Rewards</div>
+    <div class="feature-pill"><span class="icon">📈</span> Progress Tracking</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     DASHBOARD — AGENTIC COMMAND CENTER
+     ============================================================ -->
+<section id="dashboard">
+  <div class="section-header reveal">
+    <div class="section-tag">⚡ Agentic Command Center</div>
+    <h2 class="section-title">Your AI Mentor, <span class="text-blue">Live in Action</span></h2>
+    <p class="section-subtitle">Eight powerful AI modes. One unified mentor. Every tool you need to go from idea to interview-ready.</p>
+  </div>
+
+  <!-- Tab Navigation -->
+  <nav class="tab-nav" role="tablist" aria-label="AI Mentor Functions">
+    <button class="tab-btn active" id="tab-assess"    role="tab" aria-selected="true"  aria-controls="panel-assess"   data-tab="assess">
+      <span class="tab-icon">🎯</span> Assess Skills <span class="tab-badge"></span>
+    </button>
+    <button class="tab-btn" id="tab-roadmap"   role="tab" aria-selected="false" aria-controls="panel-roadmap"  data-tab="roadmap">
+      <span class="tab-icon">🗺️</span> Roadmap <span class="tab-badge"></span>
+    </button>
+    <button class="tab-btn" id="tab-ideas"     role="tab" aria-selected="false" aria-controls="panel-ideas"    data-tab="ideas">
+      <span class="tab-icon">💡</span> Project Ideas <span class="tab-badge"></span>
+    </button>
+    <button class="tab-btn" id="tab-codegen"   role="tab" aria-selected="false" aria-controls="panel-codegen"  data-tab="codegen">
+      <span class="tab-icon">⚙️</span> Generate Code <span class="tab-badge"></span>
+    </button>
+    <button class="tab-btn" id="tab-debug"     role="tab" aria-selected="false" aria-controls="panel-debug"    data-tab="debug">
+      <span class="tab-icon">🐛</span> Debug <span class="tab-badge"></span>
+    </button>
+    <button class="tab-btn" id="tab-explain"   role="tab" aria-selected="false" aria-controls="panel-explain"  data-tab="explain">
+      <span class="tab-icon">📖</span> Explain Code <span class="tab-badge"></span>
+    </button>
+    <button class="tab-btn" id="tab-judge"     role="tab" aria-selected="false" aria-controls="panel-judge"    data-tab="judge">
+      <span class="tab-icon">⚖️</span> Judge Questions <span class="tab-badge"></span>
+    </button>
+    <button class="tab-btn" id="tab-demo"      role="tab" aria-selected="false" aria-controls="panel-demo"     data-tab="demo">
+      <span class="tab-icon">🎮</span> Demo Sim <span class="tab-badge"></span>
+    </button>
+  </nav>
+
+  <!-- ── TAB: ASSESS SKILLS ── -->
+  <div id="panel-assess" role="tabpanel" aria-labelledby="tab-assess">
+    <div class="split-screen">
+      <!-- Left: Chat -->
+      <div class="panel" id="chat-assess">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot"></span> AgentForge AI</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">🎯 Skill Scanner</div>
+        </div>
+        <div class="chat-messages" id="msgs-assess">
+          <div class="message ai">
+            <div class="message-avatar">🤖</div>
+            <div class="message-bubble">
+              Hey! I'm <strong>AgentForge</strong> 👋<br><br>
+              Let's figure out where you're starting from so I can build you a perfect roadmap.<br><br>
+              <strong>Choose your interest below or type it in!</strong>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="skill-grid" id="skill-selector">
+            <div class="skill-item" data-skill="Web Dev" onclick="selectSkill(this)">
+              <span class="skill-emoji">🌐</span>
+              <span class="skill-name">Web Dev</span>
+            </div>
+            <div class="skill-item" data-skill="AI/ML" onclick="selectSkill(this)">
+              <span class="skill-emoji">🤖</span>
+              <span class="skill-name">AI / ML</span>
+            </div>
+            <div class="skill-item" data-skill="Mobile" onclick="selectSkill(this)">
+              <span class="skill-emoji">📱</span>
+              <span class="skill-name">Mobile App</span>
+            </div>
+            <div class="skill-item" data-skill="IoT" onclick="selectSkill(this)">
+              <span class="skill-emoji">🔌</span>
+              <span class="skill-name">IoT</span>
+            </div>
+            <div class="skill-item" data-skill="Game Dev" onclick="selectSkill(this)">
+              <span class="skill-emoji">🎮</span>
+              <span class="skill-name">Game Dev</span>
+            </div>
+            <div class="skill-item" data-skill="Blockchain" onclick="selectSkill(this)">
+              <span class="skill-emoji">⛓️</span>
+              <span class="skill-name">Blockchain</span>
+            </div>
+          </div>
+          <div class="input-row" style="margin-top:10px">
+            <textarea class="chat-textarea" id="input-assess" placeholder="Or type your interest here..." rows="1"></textarea>
+            <button class="btn-send" onclick="sendAssessMessage()" aria-label="Send message">➤</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Skill Level Visual -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot" style="background:var(--blue)"></span> Skill Profile</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">Live Assessment</div>
+        </div>
+        <div class="roadmap-content" id="skill-profile-content">
+          <div style="text-align:center; padding:40px 20px; color:var(--text-muted)">
+            <div style="font-size:3rem; margin-bottom:12px">🎯</div>
+            <div style="font-size:0.9rem; font-weight:600; margin-bottom:8px; color:var(--text-secondary)">Awaiting your input…</div>
+            <div style="font-size:0.8rem">Select a skill or type your interest to see your personalized skill profile</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: ROADMAP ── -->
+  <div id="panel-roadmap" role="tabpanel" aria-labelledby="tab-roadmap" class="hidden">
+    <div class="split-screen">
+      <div class="panel" id="chat-roadmap">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot"></span> AgentForge AI</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">🗺️ Roadmap Builder</div>
+        </div>
+        <div class="chat-messages" id="msgs-roadmap">
+          <div class="message ai">
+            <div class="message-avatar">🤖</div>
+            <div class="message-bubble">
+              I'll build you a <strong>personalized learning roadmap</strong> based on your goals and skill level.<br><br>
+              What's your <strong>hackathon deadline</strong> and <strong>experience level</strong>? (e.g., "I have 2 weeks, I'm a beginner in Python")
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="input-row">
+            <textarea class="chat-textarea" id="input-roadmap" placeholder='e.g. "2 weeks, beginner, want to build a chatbot"' rows="1"></textarea>
+            <button class="btn-send" onclick="sendRoadmapMessage()" aria-label="Generate roadmap">➤</button>
+          </div>
+          <div class="input-actions">
+            <button class="quick-prompt" onclick="quickSend('roadmap', '2 weeks, beginner Python, AI/ML project')">📅 2-week plan</button>
+            <button class="quick-prompt" onclick="quickSend('roadmap', '1 month, intermediate, web dev')">📅 1-month plan</button>
+            <button class="quick-prompt" onclick="quickSend('roadmap', '1 week sprint, mobile app')">⚡ 1-week sprint</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel roadmap-panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot" style="background:var(--blue)"></span> Visual Roadmap</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)" id="roadmap-progress-label">0 / 6 steps</div>
+        </div>
+        <div class="roadmap-content" id="roadmap-nodes">
+          <div style="text-align:center; padding:40px 20px; color:var(--text-muted)">
+            <div style="font-size:3rem; margin-bottom:12px">🗺️</div>
+            <div style="font-size:0.9rem; font-weight:600; margin-bottom:8px; color:var(--text-secondary)">Your roadmap will appear here</div>
+            <div style="font-size:0.8rem">Send your goals in the chat to generate a visual learning path</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: PROJECT IDEAS ── -->
+  <div id="panel-ideas" role="tabpanel" aria-labelledby="tab-ideas" class="hidden">
+    <div class="split-screen">
+      <div class="panel" id="chat-ideas">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot"></span> AgentForge AI</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">💡 Ideation Engine</div>
+        </div>
+        <div class="chat-messages" id="msgs-ideas">
+          <div class="message ai">
+            <div class="message-avatar">🤖</div>
+            <div class="message-bubble">
+              Let's brainstorm some 🔥 hackathon project ideas for you!<br><br>
+              Tell me: <strong>What domain are you excited about?</strong> (e.g., Health, Education, Environment, Finance, Gaming)
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="input-row">
+            <textarea class="chat-textarea" id="input-ideas" placeholder='e.g. "Healthcare AI for rural areas"' rows="1"></textarea>
+            <button class="btn-send" onclick="sendIdeasMessage()" aria-label="Generate ideas">➤</button>
+          </div>
+          <div class="input-actions">
+            <button class="quick-prompt" onclick="quickSend('ideas', 'Healthcare and AI')">🏥 Healthcare</button>
+            <button class="quick-prompt" onclick="quickSend('ideas', 'Education gamification')">📚 Education</button>
+            <button class="quick-prompt" onclick="quickSend('ideas', 'Climate and environment')">🌿 Environment</button>
+            <button class="quick-prompt" onclick="quickSend('ideas', 'Fintech for students')">💰 Fintech</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot" style="background:var(--lime)"></span> Project Ideas</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">AI-Curated</div>
+        </div>
+        <div class="roadmap-content" id="ideas-output">
+          <div style="text-align:center; padding:40px 20px; color:var(--text-muted)">
+            <div style="font-size:3rem; margin-bottom:12px">💡</div>
+            <div style="font-size:0.9rem; font-weight:600; margin-bottom:8px; color:var(--text-secondary)">Ideas will spark here</div>
+            <div style="font-size:0.8rem">Pick a domain in the chat to generate 3 curated project ideas</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: CODE GENERATION ── -->
+  <div id="panel-codegen" role="tabpanel" aria-labelledby="tab-codegen" class="hidden">
+    <div class="split-screen">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot"></span> AgentForge AI</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">⚙️ Code Generator</div>
+        </div>
+        <div class="chat-messages" id="msgs-codegen">
+          <div class="message ai">
+            <div class="message-avatar">🤖</div>
+            <div class="message-bubble">
+              Tell me what you want to build and I'll generate clean, production-ready code for you! 🚀<br><br>
+              <em>Tip: Be specific! e.g. "Python Flask API that takes a user query and returns a Gemini AI response"</em>
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="input-row">
+            <textarea class="chat-textarea" id="input-codegen" placeholder='Describe what to build...' rows="2"></textarea>
+            <button class="btn-send" onclick="sendCodegenMessage()" aria-label="Generate code">➤</button>
+          </div>
+          <div class="input-actions">
+            <button class="quick-prompt" onclick="quickSend('codegen', 'Python Flask REST API with Gemini AI')">🐍 Flask API</button>
+            <button class="quick-prompt" onclick="quickSend('codegen', 'HTML CSS landing page for an app')">🌐 Landing Page</button>
+            <button class="quick-prompt" onclick="quickSend('codegen', 'Python chatbot with memory')">💬 Chatbot</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot" style="background:var(--purple)"></span> Generated Code</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">Syntax Highlighted</div>
+        </div>
+        <div style="padding:16px; overflow-y:auto; flex:1;" id="codegen-output">
+          <div style="text-align:center; padding:40px 20px; color:var(--text-muted)">
+            <div style="font-size:3rem; margin-bottom:12px">⚙️</div>
+            <div style="font-size:0.9rem; font-weight:600; margin-bottom:8px; color:var(--text-secondary)">Code will appear here</div>
+            <div style="font-size:0.8rem">Describe your project and get production-ready code in seconds</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: DEBUG ── -->
+  <div id="panel-debug" role="tabpanel" aria-labelledby="tab-debug" class="hidden">
+    <div class="split-screen">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot"></span> AgentForge AI</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">🐛 Bug Detector</div>
+        </div>
+        <div class="chat-messages" id="msgs-debug">
+          <div class="message ai">
+            <div class="message-avatar">🤖</div>
+            <div class="message-bubble">
+              Paste your buggy code below ↓ and I'll find and fix every issue! 🔍<br><br>
+              I'll show you the <strong>exact changes</strong> needed with diff highlighting.
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="input-row" style="align-items:flex-start">
+            <textarea class="chat-textarea" id="input-debug" placeholder="Paste your buggy code here..." rows="5"></textarea>
+            <button class="btn-send" onclick="sendDebugMessage()" aria-label="Debug code" style="align-self:flex-end">🐛</button>
+          </div>
+          <div class="input-actions">
+            <button class="quick-prompt" onclick="loadBuggyCode()">📋 Load Sample Bug</button>
+            <button class="quick-prompt" onclick="clearInput('debug')">🗑️ Clear</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot" style="background:var(--orange)"></span> Fixed Code (Diff)</div>
+          <button class="btn-copy" id="copy-debug" onclick="copyCode('debug-fix-code')">📋 Copy Fix</button>
+        </div>
+        <div style="padding:16px; overflow-y:auto; flex:1;" id="debug-output">
+          <div style="text-align:center; padding:40px 20px; color:var(--text-muted)">
+            <div style="font-size:3rem; margin-bottom:12px">🐛→✅</div>
+            <div style="font-size:0.9rem; font-weight:600; margin-bottom:8px; color:var(--text-secondary)">Bug fixes will appear here</div>
+            <div style="font-size:0.8rem">Paste your code to see diff highlighting of all issues</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: EXPLAIN CODE ── -->
+  <div id="panel-explain" role="tabpanel" aria-labelledby="tab-explain" class="hidden">
+    <div class="split-screen">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot"></span> AgentForge AI</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">📖 Code Explainer</div>
+        </div>
+        <div class="chat-messages" id="msgs-explain">
+          <div class="message ai">
+            <div class="message-avatar">🤖</div>
+            <div class="message-bubble">
+              Paste any code and I'll give you a <strong>line-by-line explanation</strong> in plain English! 📖<br><br>
+              Perfect for understanding what your code actually does.
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="input-row" style="align-items:flex-start">
+            <textarea class="chat-textarea" id="input-explain" placeholder="Paste code to explain..." rows="5"></textarea>
+            <button class="btn-send" onclick="sendExplainMessage()" aria-label="Explain code" style="align-self:flex-end">📖</button>
+          </div>
+          <div class="input-actions">
+            <button class="quick-prompt" onclick="loadExplainSample()">📋 Load Sample</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot" style="background:var(--lime)"></span> Line-by-Line Explanation</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">Plain English</div>
+        </div>
+        <div style="padding:16px; overflow-y:auto; flex:1;" id="explain-output">
+          <div style="text-align:center; padding:40px 20px; color:var(--text-muted)">
+            <div style="font-size:3rem; margin-bottom:12px">📖</div>
+            <div style="font-size:0.9rem; font-weight:600; margin-bottom:8px; color:var(--text-secondary)">Explanation will appear here</div>
+            <div style="font-size:0.8rem">Any code — explained in plain, beginner-friendly English</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: JUDGE QUESTIONS ── -->
+  <div id="panel-judge" role="tabpanel" aria-labelledby="tab-judge" class="hidden">
+    <div class="split-screen">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot"></span> AgentForge AI</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">⚖️ Judge Simulator</div>
+        </div>
+        <div class="chat-messages" id="msgs-judge">
+          <div class="message ai">
+            <div class="message-avatar">🤖</div>
+            <div class="message-bubble">
+              I'll predict the <strong>10 toughest questions</strong> a judge might ask you! ⚖️<br><br>
+              Tell me your project name and what it does, and I'll prepare you for the judge's table.
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="input-row">
+            <textarea class="chat-textarea" id="input-judge" placeholder='e.g. "My project is an AI chatbot for student mentorship using Gemini API"' rows="2"></textarea>
+            <button class="btn-send" onclick="sendJudgeMessage()" aria-label="Generate judge questions">➤</button>
+          </div>
+          <div class="input-actions">
+            <button class="quick-prompt" onclick="quickSend('judge', 'AI chatbot for student mentorship using Gemini API')">🤖 AI Chatbot</button>
+            <button class="quick-prompt" onclick="quickSend('judge', 'Smart waste management using IoT sensors')">♻️ IoT Project</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot" style="background:var(--orange)"></span> 10 Predicted Questions</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)" id="judge-score-label">Score: —</div>
+        </div>
+        <div style="padding:16px; overflow-y:auto; flex:1;" id="judge-output">
+          <div style="text-align:center; padding:40px 20px; color:var(--text-muted)">
+            <div style="font-size:3rem; margin-bottom:12px">⚖️</div>
+            <div style="font-size:0.9rem; font-weight:600; margin-bottom:8px; color:var(--text-secondary)">Questions will appear here</div>
+            <div style="font-size:0.8rem">Describe your project to prepare for the judge's panel</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── TAB: DEMO SIMULATION ── -->
+  <div id="panel-demo" role="tabpanel" aria-labelledby="tab-demo" class="hidden">
+    <div class="split-screen">
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot"></span> AgentForge AI</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)">🎮 Demo Coach</div>
+        </div>
+        <div class="chat-messages" id="msgs-demo">
+          <div class="message ai">
+            <div class="message-avatar">🤖</div>
+            <div class="message-bubble">
+              Let's simulate your <strong>hackathon demo!</strong> 🎮<br><br>
+              Tell me your project and I'll run a 60-second demo simulation, give feedback on your pitch, and score your delivery.
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-area">
+          <div class="input-row">
+            <textarea class="chat-textarea" id="input-demo" placeholder='Describe your project for demo simulation...' rows="2"></textarea>
+            <button class="btn-send" onclick="sendDemoMessage()" aria-label="Start demo">🎮</button>
+          </div>
+          <div class="input-actions">
+            <button class="quick-prompt" onclick="quickSend('demo', 'AgentForge AI hackathon mentor')">🚀 Demo AgentForge</button>
+            <button class="quick-prompt" onclick="quickSend('demo', 'Smart city traffic optimizer')">🌆 Smart City</button>
+          </div>
+        </div>
+      </div>
+      <div class="panel demo-stage">
+        <div class="panel-header">
+          <div class="panel-title"><span class="panel-dot" style="background:var(--orange)"></span> Demo Stage</div>
+          <div style="font-size:0.75rem;color:var(--text-muted)" id="demo-timer">00:00</div>
+        </div>
+        <div class="demo-screen" id="demo-screen">
+          <div style="text-align:center; color:var(--text-muted)">
+            <div style="font-size:3rem; margin-bottom:12px">🎬</div>
+            <div style="font-size:0.9rem; font-weight:600; margin-bottom:8px; color:var(--text-secondary)">Demo Stage Ready</div>
+            <div style="font-size:0.8rem">Start your demo simulation to see live feedback</div>
+          </div>
+        </div>
+        <div class="demo-controls" id="demo-controls">
+          <button class="btn-secondary" onclick="startDemo()" id="btn-start-demo" style="font-size:0.85rem; padding:10px 20px;">▶ Start Demo</button>
+          <button class="btn-secondary" onclick="resetDemo()" style="font-size:0.85rem; padding:10px 20px;">↺ Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     JUDGE'S PROOF SECTION
+     ============================================================ -->
+<section id="judge-proof">
+  <div class="section-header reveal">
+    <div class="section-tag">📊 Judge's Proof</div>
+    <h2 class="section-title">Your <span class="text-lime">Progress Dashboard</span></h2>
+    <p class="section-subtitle">Real-time metrics showing your hackathon readiness — updated as you work through each AI module.</p>
+  </div>
+
+  <!-- Metrics -->
+  <div class="metrics-grid reveal">
+    <div class="metric-card blue" id="metric-code">
+      <span class="metric-icon">⚙️</span>
+      <div class="metric-value" id="metric-code-val">0%</div>
+      <div class="metric-label">Code Correctness Score</div>
+      <div class="prog-bar-bg">
+        <div class="prog-bar-fill" id="prog-code" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="metric-card lime" id="metric-interview">
+      <span class="metric-icon">🎤</span>
+      <div class="metric-value" id="metric-interview-val">0%</div>
+      <div class="metric-label">Interview Readiness</div>
+      <div class="prog-bar-bg">
+        <div class="prog-bar-fill" id="prog-interview" style="width:0%"></div>
+      </div>
+    </div>
+
+    <div class="metric-card purple" id="metric-skill">
+      <span class="metric-icon">🎯</span>
+      <div class="metric-value" id="metric-skill-val">0%</div>
+      <div class="metric-label">Skill Completion</div>
+      <div class="prog-bar-bg">
+        <div class="prog-bar-fill" id="prog-skill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Badges -->
+  <div class="badges-panel reveal">
+    <div class="badges-title">🏆 Achievements Unlocked</div>
+    <div class="badges-grid" id="badges-grid">
+      <div class="badge-item locked" id="badge-first-step" data-badge="first-step">
+        <span class="badge-emoji">👋</span>
+        <span class="badge-name">First Step</span>
+      </div>
+      <div class="badge-item locked" id="badge-skill-assessed" data-badge="skill-assessed">
+        <span class="badge-emoji">🎯</span>
+        <span class="badge-name">Skill Mapped</span>
+      </div>
+      <div class="badge-item locked" id="badge-roadmap" data-badge="roadmap">
+        <span class="badge-emoji">🗺️</span>
+        <span class="badge-name">Pathfinder</span>
+      </div>
+      <div class="badge-item locked" id="badge-ideas" data-badge="ideas">
+        <span class="badge-emoji">💡</span>
+        <span class="badge-name">Ideator</span>
+      </div>
+      <div class="badge-item locked" id="badge-coder" data-badge="coder">
+        <span class="badge-emoji">⚙️</span>
+        <span class="badge-name">Code Forger</span>
+      </div>
+      <div class="badge-item locked" id="badge-debugger" data-badge="debugger">
+        <span class="badge-emoji">🐛</span>
+        <span class="badge-name">Bug Slayer</span>
+      </div>
+      <div class="badge-item locked" id="badge-explainer" data-badge="explainer">
+        <span class="badge-emoji">📖</span>
+        <span class="badge-name">Code Sage</span>
+      </div>
+      <div class="badge-item locked" id="badge-judge" data-badge="judge">
+        <span class="badge-emoji">⚖️</span>
+        <span class="badge-name">Judge Proof</span>
+      </div>
+      <div class="badge-item locked" id="badge-demo" data-badge="demo">
+        <span class="badge-emoji">🎮</span>
+        <span class="badge-name">Demo King</span>
+      </div>
+      <div class="badge-item locked" id="badge-finalist" data-badge="finalist">
+        <span class="badge-emoji">🏆</span>
+        <span class="badge-name">Finalist</span>
+      </div>
+      <div class="badge-item locked" id="badge-speed" data-badge="speed">
+        <span class="badge-emoji">⚡</span>
+        <span class="badge-name">Speed Forge</span>
+      </div>
+      <div class="badge-item locked" id="badge-master" data-badge="master">
+        <span class="badge-emoji">🌟</span>
+        <span class="badge-name">Forge Master</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">
+      <svg width="28" height="28" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect width="36" height="36" rx="8" fill="url(#footer-anvil-grad)"/>
+        <rect x="7" y="18" width="22" height="10" rx="2" fill="#fff" opacity="0.15"/>
+        <rect x="10" y="12" width="16" height="8" rx="2" fill="#fff" opacity="0.25"/>
+        <rect x="13" y="8"  width="10" height="6"  rx="2" fill="#fff" opacity="0.4"/>
+        <line x1="13" y1="22" x2="23" y2="22" stroke="#32FF7E" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="18" cy="22" r="2" fill="#32FF7E"/>
+        <defs>
+          <linearGradient id="footer-anvil-grad" x1="0" y1="0" x2="36" y2="36">
+            <stop offset="0%" stop-color="#007BFF"/><stop offset="100%" stop-color="#0033aa"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      AgentForge
+    </div>
+
+    <p class="footer-tagline">
+      AgentForge — Guiding Students from Fresher to Hackathon Finalist.<br />
+      Powered by Google Gemini AI · Built with ❤️ for Hackathon Heroes.
+    </p>
+
+    <ul class="footer-links">
+      <li>
+        <a href="https://github.com/Brunda-builds/AgentForge" target="_blank" rel="noopener noreferrer" aria-label="GitHub Repository">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+          GitHub Repo
+        </a>
+      </li>
+      <li>
+        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn Profile">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          LinkedIn
+        </a>
+      </li>
+      <li>
+        <a href="#hero" aria-label="Back to top">
+          ↑ Back to Top
+        </a>
+      </li>
+    </ul>
+
+    <div class="footer-copy">
+      © 2026 AgentForge · Built for Hackathon Freshers Everywhere
+    </div>
+  </div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
